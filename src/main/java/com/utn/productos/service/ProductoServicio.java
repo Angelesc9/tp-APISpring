@@ -38,21 +38,25 @@ public class ProductoServicio {
         return productoRepository.findByCategoria(categoria);
     }
 
-    public void actualizarProducto(Long id,Producto productoActualizado ){
-        if (id != null && productoActualizado != null){
+    public Producto actualizarProducto(Long id,Producto productoActualizado ){
             if( obtenerPorId(id) != null ){
                     eliminarProducto(id);
                     productoActualizado.setId(id);
-                    productoRepository.save(productoActualizado);
-                }
-           //FALTA PONER LA EXCEPCION
-        }
+                    return productoRepository.save(productoActualizado);
+                }else{
+                //FALTA CAMBIAR LA EXCEPCION
+                    throw new IllegalArgumentException("El producto no existe");
+            }
     }
-    public void actualizarStock(Long id, Integer nuevoStock) {
+    public Producto actualizarStock(Long id, Integer nuevoStock) {
         if (id !=null && obtenerPorId(id) != null){
             Producto producto = obtenerPorId(id).get();
             producto.setStock(nuevoStock);
-            productoRepository.save(producto);
+            return productoRepository.save(producto);
+        }
+        else {
+            //CAMBIAR EXCEPCION POR UNA CUSTOM
+            throw new IllegalArgumentException("El id del producto no puede ser nulo");
         }
     }
     public void eliminarProducto(Long id) {
@@ -71,7 +75,7 @@ public class ProductoServicio {
 
     public Producto crearProductoDesdeProductoDTO(ProductoDTO productoDTO) {
         Producto producto = this.mapper.map(productoDTO, Producto.class);
-        return producto;
+        return productoRepository.save(producto);
     }
     public ProductoResponseDTO crearProductoResponseDTO(Producto producto){
         ProductoResponseDTO productoResponseDTO = this.mapper.map(producto, ProductoResponseDTO.class);
